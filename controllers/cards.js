@@ -26,7 +26,7 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-module.exports.likeCard = (req, res, next) => {
+module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
@@ -39,9 +39,9 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         console.log('test3');
-        return res.status(400).send({ message: 'Переданы не корректные данные' });
+        return res.status(400).send({ message: 'внутренняя ошибка сервера' });
       }
-      res.status(500).send({ message: 'внутренняя ошибка сервера' });
+      res.status(400).send({ message: 'Переданы не корректные данные' });
     });
 };
 
