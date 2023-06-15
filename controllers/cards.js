@@ -26,22 +26,26 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-module.exports.getLike = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        console.log('test');
+        return res.status(404).send({ message: 'Пользователь не найден' });
       }
+      console.log('test2');
       res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы не корректные данные' });
+        console.log('test3');
+        return res.status(400).send({ message: 'Переданы не корректные данные' });
       }
+      res.status(500).send({ message: 'внутренняя ошибка сервера' });
     });
 };
 
-module.exports.deleteLike = (req, res, next) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
