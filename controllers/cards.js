@@ -31,7 +31,7 @@ module.exports.likeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         console.log('test');
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
       }
       console.log('test2');
       res.status(200).send({ data: card });
@@ -45,10 +45,21 @@ module.exports.likeCard = (req, res) => {
     });
 };
 
-module.exports.dislikeCard = (req, res, next) => {
+module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        console.log('test');
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      console.log('test2');
+      res.status(200).send({ data: card });
+    })
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        console.log('test3');
+        return res.status(400).send({ message: 'внутренняя ошибка сервера' });
+      }
+      res.status(400).send({ message: 'Переданы не корректные данные' });
     });
 };
