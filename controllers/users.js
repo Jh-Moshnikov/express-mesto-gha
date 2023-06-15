@@ -13,9 +13,9 @@ module.exports.getUserId = (req, res) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        return res.status(400).send({ message: 'Переданы некорректные данные' });
       } if (err.message === 'NotFound') {
-        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+        return res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
       }
       return res.status(500).send({ message: 'внутренняя ошибка сервера' });
     });
