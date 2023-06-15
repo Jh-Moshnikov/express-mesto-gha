@@ -1,5 +1,4 @@
 const User = require('../moduls/user');
-const BadRequestError = require('../utils/errors/badRequest');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -18,7 +17,7 @@ module.exports.getUserId = (req, res, next) => {
     });
 };
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then(() => res.status(201).send({
@@ -28,9 +27,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Переданы не валидные данные'));
+        res.status(400).send({ message: 'Переданы не корректные данные' });
+      } else {
+        res.status(500).send({ message: 'не корректные данные' });
       }
-      next(err);
     });
 };
 
