@@ -21,16 +21,28 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.user.id)
-    .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(500).send(err));
+  const { cardId } = req.params;
+  Card.findByIdAndRemove(cardId)
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+      }
+      return res.send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: ' Переданы некорректные данные' });
+      } else {
+        res.status(500).send({ message: 'внутренняя ошибка сервера' });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Передан несуществующий _id карточки' });
+        return res.status(404).send({ message: 'Карточка с указанным _id не найдена.' });
       }
       res.status(200).send({ data: card });
     })
