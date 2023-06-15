@@ -29,19 +29,23 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы не корректные данные' });
       } else {
-        res.status(500).send({ message: 'не корректные данные' });
+        res.status(500).send({ message: 'внутренняя ошибка сервера' });
       }
     });
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы не корректные данные' });
+      } else {
+        res.status(500).send({ message: 'внутренняя ошибка сервера' });
+      }
     });
 };
 
