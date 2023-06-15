@@ -26,11 +26,18 @@ module.exports.deleteCard = (req, res) => {
     .catch((err) => res.status(500).send(err));
 };
 
-module.exports.getLike = (req, res, next) => {
+module.exports.getLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send({ data: card });
+    })
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы не корректные данные' });
+      }
     });
 };
 
