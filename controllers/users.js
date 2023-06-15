@@ -6,12 +6,18 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserId = (req, res, next) => {
+module.exports.getUserId = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
+    .orFail(new Error('NotFound'))
     .then((user) => res.send(user))
     .catch((err) => {
-      next(err);
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
+      } if (err.message === 'NotFound') {
+        res.status(404).send({ message: 'Пользователь по указанному _id не найден' });
+      }
+      return res.status(500).send({ message: 'внутренняя ошибка сервера' });
     });
 };
 
@@ -21,7 +27,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы не корректные данные' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'внутренняя ошибка сервера' });
       }
@@ -36,7 +42,7 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы не корректные данные' });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'внутренняя ошибка сервера' });
       }
