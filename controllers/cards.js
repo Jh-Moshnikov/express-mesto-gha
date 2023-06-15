@@ -6,13 +6,17 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.createCard = (req, res, next) => {
+module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      next(err);
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Переданы не корректные данные' });
+      } else {
+        res.status(500).send({ message: 'внутренняя ошибка сервера' });
+      }
     });
 };
 
