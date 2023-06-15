@@ -9,9 +9,7 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUserId = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
-    .then((user) => {
-      res.send({ data: user });
-    })
+    .then((user) => res.send(user))
     .catch((err) => {
       next(err);
     });
@@ -20,11 +18,7 @@ module.exports.getUserId = (req, res, next) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then(() => res.status(201).send({
-      data: {
-        name, about, avatar,
-      },
-    }))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы не корректные данные' });
