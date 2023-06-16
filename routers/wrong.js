@@ -10,6 +10,5 @@ wrongRoutes.use('/cards', cardRoutes);
 wrongRoutes.use('*', (req, res) => {
   res.status(404).send({ message: 'Страница не найдена' });
 });
-wrongRoutes.use(express.json());
 
 module.exports = wrongRoutes;
