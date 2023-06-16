@@ -1,5 +1,3 @@
-const express = require('express');
-
 const wrongRoutes = require('express').Router();
 
 const userRoutes = require('./users');
