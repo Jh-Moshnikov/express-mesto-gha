@@ -105,9 +105,18 @@ module.exports.login = (req, res, next) => {
 };
 
 module.exports.getUserInfo = (req, res, next) => {
-  User.findOne({ _id: req.user._id })
+  User.findById(req.user._id)
     .then((user) => {
+      if (!user) {
+        throw res.status(NOT_FOUND).send({ message: 'пользователь не найден' });
+      }
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
+      } else if (err.message === 'NotFound') {
+        res.status(NOT_FOUND).send({ message: 'пользователь не найден' });
+      } else next(err);
+    });
 };
