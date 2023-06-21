@@ -9,10 +9,10 @@ const {
   SERVER_ERROR,
 } = require('../utils/errors/errors');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch(next);
 };
 
 module.exports.getUserId = (req, res) => {
