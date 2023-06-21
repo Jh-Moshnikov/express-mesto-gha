@@ -3,12 +3,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../moduls/user');
 // const AuthError = require('../utils/errors/authError');
 const BadRequest = require('../utils/errors/badRequest');
-const ConflictError = require('../utils/errors/conflictError');
+// const ConflictError = require('../utils/errors/conflictError');
 
 const {
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
+  CONFLICT_ERROR,
 } = require('../utils/errors/errors');
 
 module.exports.getUsers = (req, res) => {
@@ -50,7 +51,7 @@ module.exports.createUser = (req, res, next) => {
       // eslint-disable-next-line consistent-return
       .catch((err) => {
         if (err.code === 11000) {
-          return next(new ConflictError('Пользователь с данным email уже существует'));
+          return res.status(CONFLICT_ERROR).send({ message: 'Пользователь с данным email уже существует' });
         }
         if (err.name === 'ValidationError') {
           return next(new BadRequest('Некорректные данные'));
