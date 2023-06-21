@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 
 app.use(auth);
-app.use(userRoutes);
+app.use('/users', userRoutes);
 app.use(cardRoutes);
 app.use(wrongRoutes);
 
