@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routers/users');
 const cardRoutes = require('./routers/cards');
 const wrongRoutes = require('./routers/wrong');
-const auth = require('./middlewares/auth');
+// const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -15,8 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 
-app.use(auth);
-app.use('/users', userRoutes);
+// app.use(auth);
+app.use(userRoutes);
 app.use(cardRoutes);
 app.use(wrongRoutes);
 
