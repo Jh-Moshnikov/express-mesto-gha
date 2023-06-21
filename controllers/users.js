@@ -1,4 +1,7 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../moduls/user');
+const AuthError = require('../utils/errors/authError');
 
 const {
   BAD_REQUEST,
@@ -27,11 +30,19 @@ module.exports.getUserId = (req, res) => {
     });
 };
 
-module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10).then((hash) => User.create({
+    name, about, avatar, email, password: hash,
+  }))
+    .then((user) => res.send(user))
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
+      if (err.code === 11000) {
+        return next(new AuthError('Пользователь с данным email уже существует'));
+      }
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
@@ -44,7 +55,7 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -59,7 +70,7 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => {
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -68,4 +79,24 @@ module.exports.updateAvatar = (req, res) => {
         res.status(SERVER_ERROR).send({ message: 'внутренняя ошибка сервера' });
       }
     });
+};
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', {
+        expiresIn: '7d',
+      });
+      res.send({ token });
+    })
+    .catch(next);
+};
+
+module.exports.getUserInfo = (req, res, next) => {
+  User.findOne({ _id: req.user._id })
+    .then((user) => {
+      res.send(user);
+    })
+    .catch(next);
 };
