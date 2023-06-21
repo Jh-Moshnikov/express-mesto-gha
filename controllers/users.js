@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../moduls/user');
 const AuthError = require('../utils/errors/authError');
+const BadRequest = require('../utils/errors/badRequest');
 
 const {
   BAD_REQUEST,
@@ -34,21 +35,29 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  bcrypt.hash(password, 10).then((hash) => User.create({
-    name, about, avatar, email, password: hash,
-  }))
-    .then((user) => res.send(user))
-    // eslint-disable-next-line consistent-return
-    .catch((err) => {
-      if (err.code === 11000) {
-        return next(new AuthError('Пользователь с данным email уже существует'));
-      }
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(SERVER_ERROR).send({ message: 'внутренняя ошибка сервера' });
-      }
-    });
+  bcrypt.hash(password, 10).then((hash) => {
+    User.create({
+      name, about, avatar, email, password: hash,
+    })
+      .then(() => res.send(
+        {
+          data: {
+            name, about, avatar, email,
+          },
+        },
+      ))
+      // eslint-disable-next-line consistent-return
+      .catch((err) => {
+        if (err.code === 11000) {
+          return next(new AuthError('Пользователь с данным email уже существует'));
+        }
+        if (err.name === 'ValidationError') {
+          return next(new BadRequest('Некорректные данные'));
+        }
+        next(err);
+      });
+  })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res) => {
