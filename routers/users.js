@@ -6,15 +6,13 @@ const {
   updateUser,
   updateAvatar,
   getUserInfo,
-  login,
-  createUser,
 } = require('../controllers/users');
+
+const { validationUserId, validationUserInfo, validationAvatar } = require('../middlewares/getValidation');
 
 userRoutes.get('/users', getUsers);
 userRoutes.get('/me', getUserInfo);
-userRoutes.get('/users/:userId', getUserId);
-userRoutes.patch('/users/me', updateUser);
-userRoutes.patch('/users/me/avatar', updateAvatar);
-userRoutes.post('/signin', login);
-userRoutes.post('/signup', createUser);
+userRoutes.get('/users/:userId', validationUserId, getUserId);
+userRoutes.patch('/users/me', validationUserInfo, updateUser);
+userRoutes.patch('/users/me/avatar', validationAvatar, updateAvatar);
 module.exports = userRoutes;
