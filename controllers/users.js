@@ -100,19 +100,14 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserInfo = (req, res, next) => {
-  User.findById(req.user._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFound('Пользователь не найден');
-      }
-      res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Некорректные данные'));
-      } else if (err.message === 'NotFound') {
-        next(new NotFound('Пользователь не найден'));
-      } else next(err);
-    });
+// eslint-disable-next-line consistent-return
+module.exports.getUserInfo = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.user._id });
+    console.log('test');
+    res.send(user);
+  } catch (err) {
+    console.log('test2');
+    return next(err);
+  }
 };

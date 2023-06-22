@@ -20,9 +20,9 @@ mongoose.connect('mongodb://127.0.0.1/mestodb');
 
 app.post('/signin', validationLogin, login);
 app.post('/signup', validationCreateUser, createUser);
-// app.use(auth);
-app.use('/users', auth, userRoutes);
-app.use('/cards', auth, cardRoutes);
+app.use(auth);
+app.use(userRoutes);
+app.use(cardRoutes);
 app.use(errors());
 
 app.use((err, req, res, next) => {
