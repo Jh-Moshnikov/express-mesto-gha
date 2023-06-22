@@ -1,12 +1,8 @@
 const wrongRoutes = require('express').Router();
+const NotFound = require('../utils/errors/notFound');
 
-const userRoutes = require('./users');
-const cardRoutes = require('./cards');
-
-wrongRoutes.use('/users', userRoutes);
-wrongRoutes.use('/cards', cardRoutes);
-wrongRoutes.use('*', (req, res) => {
-  res.status(404).send({ message: 'Страница не найдена' });
+wrongRoutes.use('*', (req, res, next) => {
+  next(new NotFound('Такая страница не существует'));
 });
 
 module.exports = wrongRoutes;
