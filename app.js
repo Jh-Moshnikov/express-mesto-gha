@@ -24,6 +24,16 @@ app.post('/signup', validationCreateUser, createUser);
 app.use('/users', auth, userRoutes);
 app.use('/cards', auth, cardRoutes);
 app.use(errors());
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
+  next();
+});
 app.use(wrongRoutes);
 
 app.listen(PORT, () => {
