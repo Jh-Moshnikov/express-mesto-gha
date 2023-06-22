@@ -14,7 +14,6 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserId = (req, res, next) => {
   const { userId } = req.params;
-  console.log(userId);
   User.findById(userId)
     .then((user) => {
       if (!user) {
@@ -104,7 +103,6 @@ module.exports.login = (req, res, next) => {
 // текущий пользователь
 module.exports.getUserInfo = (req, res, next) => {
   const userId = req.user._id;
-  console.log(req.user._id);
   User.findById(userId)
     .then((user) => res.send(user))
     .catch(next);
