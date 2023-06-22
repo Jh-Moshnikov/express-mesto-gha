@@ -23,11 +23,11 @@ app.post('/signup', validationCreateUser, createUser);
 app.use(auth);
 app.use(userRoutes);
 app.use(cardRoutes);
+app.use(wrongRoutes);
 app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  console.log('tets app');
   res.status(statusCode).send({
     message: statusCode === 500
       ? 'На сервере произошла ошибка'
@@ -35,7 +35,6 @@ app.use((err, req, res, next) => {
   });
   next();
 });
-app.use(wrongRoutes);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
