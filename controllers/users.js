@@ -13,23 +13,22 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUserId = (req, res, next) => {
-  const { userId } = req.params;
+  const { userId } = req.params.id;
+  console.log('retfd');
+  console.log(req.user._id);
   User.findById(userId)
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        console.log('test yt yfql');
         throw new NotFound('Пользователь не найден');
       }
-      res.send({ data: user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
       }
-      console.log('test');
       next(err);
-      console.log('test5');
     });
 };
 
