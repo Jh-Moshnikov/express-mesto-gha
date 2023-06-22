@@ -18,7 +18,8 @@ module.exports.getUserId = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     .then((user) => {
       if (!user) {
-        return new NotFound('Пользователь не найден');
+        console.log('test yt yfql');
+        throw new NotFound('Пользователь не найден');
       }
       res.send({ data: user });
     })
@@ -28,6 +29,7 @@ module.exports.getUserId = (req, res, next) => {
       }
       console.log('test');
       next(err);
+      console.log('test5');
     });
 };
 
