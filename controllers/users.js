@@ -103,14 +103,11 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-// eslint-disable-next-line consistent-return
-module.exports.getUserInfo = async (req, res, next) => {
-  try {
-    const user = await User.findOne({ _id: req.user._id });
-    console.log('test');
-    res.send(user);
-  } catch (err) {
-    console.log('test2');
-    return next(err);
-  }
+// текущий пользователь
+module.exports.getUserInfo = (req, res, next) => {
+  const userId = req.user._id;
+  console.log(req.user._id);
+  User.findById(userId)
+    .then((user) => res.send(user))
+    .catch(next);
 };

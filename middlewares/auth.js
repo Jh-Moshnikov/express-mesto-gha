@@ -3,10 +3,10 @@ const AuthError = require('../utils/errors/authError');
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
-  const authorization = req.headers;
-  console.log({ authorization });
+  const { authorization } = req.headers;
+  console.log(authorization);
+  console.log(req.headers);
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    console.log('test auth1');
     return next(new AuthError('Необходима авторизация'));
   }
   const token = authorization.replace('Bearer ', '');
