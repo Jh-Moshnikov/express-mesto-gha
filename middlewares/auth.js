@@ -21,7 +21,7 @@ module.exports = (req, res, next) => {
     return new AuthError('Необходима авторизация');
   }
   req.user = payload;
-  console.log(req.user._id);
+  console.log(req.user);
   console.log('tets finale');
   next();
 };

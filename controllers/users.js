@@ -14,8 +14,8 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserId = (req, res, next) => {
   const { userId } = req.params.id;
-  console.log('retfd');
-  console.log(req.user._id);
+  console.log('получить по айди');
+  console.log(req.params.id);
   User.findById(userId)
     // eslint-disable-next-line consistent-return
     .then((user) => {
@@ -24,9 +24,10 @@ module.exports.getUserId = (req, res, next) => {
       }
       res.send(user);
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные'));
+        return next(new BadRequest('Переданы некорректные данные'));
       }
       next(err);
     });
